@@ -20,5 +20,10 @@
   "bugs": {
     "url": "https://github.com/andersjanmyr/promise-lab/issues"
   },
-  "homepage": "https://github.com/andersjanmyr/promise-lab"
+  "homepage": "https://github.com/andersjanmyr/promise-lab",
+  "devDependencies": {
+    "chai": "~1.8.1",
+    "mocha": "~1.16.2",
+    "sinon": "~1.7.3"
+  }
 }
