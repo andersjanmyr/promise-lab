@@ -47,14 +47,279 @@ document.write( '<link rel="stylesheet" href="reveal.js/css/print/' + ( window.l
 
     <section>
       <h2>Promises</h2>
+      <h1>What?</h1>
+    </section>
+
+    <section>
+      <h2>Promises, what?</h2>
+      <blockquote>
+        A promise is an object that represents the return value or the
+        thrown exception that the function may eventually provide.
+      </blockquote>
+    </section>
+
+
+    <section>
+      <h2>Promises</h2>
+      <h1>Why?</h1>
+    </section>
+
+    <section>
+      <h2>Promises, why?</h2>
+      <blockquote>
+        To bring composability and error handling to asynchronous
+        programming.
+      </blockquote>
+    </section>
+
+
+    <section>
+      <h2>Callback (successful)</h2>
       <pre><code data-trim contenteditable>
+function asyncHello(what, callback) {
+    setTimeout(function() {
+        callback(null, 'Hello ' + what);
+    }, 100);
+}
+      </code></pre>
+      <pre><code data-trim contenteditable>
+asyncHello('Tapir', function(err, hello) {
+    if (err) return console.error('Failure');
+    console.log(hello);
+});
       </code></pre>
     </section>
 
     <section>
-      <h2>Promises</h2>
+      <h2>Callback (failing)</h2>
       <pre><code data-trim contenteditable>
+function asyncFail(what, callback) {
+    setTimeout(function() {
+        callback('I fail, therefore I am');
+    }, 100);
+}
       </code></pre>
+      <pre><code data-trim contenteditable>
+asyncFail('Tapir', function(err, hello) {
+    if (err) return console.error('Failure');
+    // do something
+});
+      </code></pre>
+    </section>
+
+    <section>
+      <h2>Callback (error)</h2>
+      <pre><code data-trim contenteditable>
+function asyncError(what, callback) {
+    try {
+        return callback(null, JSON.parse(what));
+    } catch (error) {
+        return callback(error);
+    }
+}
+      </code></pre>
+    </section>
+
+    <section>
+      <h2>Then</h2>
+      <pre><code data-trim contenteditable>
+          promise.then(onFulfilled, onRejected)
+      </code></pre>
+    </section>
+
+    <section>
+      <h2>catch</h2>
+      <pre><code data-trim contenteditable>
+          promise.catch(onRejected)
+
+// Same as
+promise.then(null, onRejected)
+      </code></pre>
+    </section>
+
+    <section>
+      <h2>finally</h2>
+      <pre><code data-trim contenteditable>
+promise.then(onFulfilled, onRejected)
+.finally() // Clean up resources
+      </code></pre>
+    </section>
+
+    <section>
+      <h2>Propagation</h2>
+      <ul>
+        <li>
+        If you return a value in a handler, outputPromise will get fulfilled.
+        </li>
+        <li>
+        If you throw an exception in a handler, outputPromise will get rejected.
+        </li>
+        <li>
+        If you return a promise in a handler, outputPromise will “become” that
+        promise. Being able to become a new promise is useful for managing
+        delays, combining results, or recovering from errors.
+        </li>
+      </ul>
+
+
+    </section>
+
+    <section>
+      <h2>Chaining and nesting</h2>
+      <pre><code data-trim contenteditable>
+function authenticate() {
+    return getUsername()
+    .then(function (username) {
+        return getUser(username);
+    })
+    // chained because we will not need the user name in the next event
+    .then(function (user) {
+        return getPassword()
+        // nested because we need both user and password next
+        .then(function (password) {
+            if (user.passwordHash !== hash(password)) {
+                throw new Error("Can't authenticate");
+            }
+        });
+    })
+    .catch(errorHandler);
+}
+      </code></pre>
+    </section>
+
+    <section>
+      <h2>Creating Q(value)</h2>
+      <ul>
+        <li>
+        If value is a Q promise, returns the promise.
+        </li>
+        <li>
+        If value is a promise from another library it is coerced into a Q promise (where possible).
+        </li>
+        <li>
+        If value is not a promise, returns a promise that is fulfilled with value.
+        </li>
+      </ul>
+
+    </section>
+    <section>
+      <h2>Creating (fcall)</h2>
+      <pre><code data-trim contenteditable>
+// Creates a promise from a value
+return Q.fcall(function () {
+    return 10;
+});
+      </code></pre>
+    </section>
+
+    <section>
+      <h2>Creating (deferred)</h2>
+      <pre><code data-trim contenteditable>
+// Interfacing with async functions
+var deferred = Q.defer();
+FS.readFile("foo.txt", "utf-8", function (error, text) {
+    if (error) {
+        deferred.reject(new Error(error));
+    } else {
+        deferred.resolve(text);
+    }
+});
+return deferred.promise;
+      </code></pre>
+    </section>
+
+    <section>
+      <h2>Creating with Node functions</h2>
+      <pre><code data-trim contenteditable>
+return Q.nfcall(FS.readFile, "foo.txt", "utf-8");
+return Q.nfapply(FS.readFile, ["foo.txt", "utf-8"]);
+      </code></pre>
+    </section>
+
+    <section>
+      <h2>Creating with nbind</h2>
+      <pre><code data-trim contenteditable>
+var Kitty = mongoose.model("Kitty");
+var findKitties = Q.nbind(Kitty.find, Kitty);
+
+findKitties({ cute: true }).done(function (theKitties) {
+
+});
+      </code></pre>
+    </section>
+
+    <section>
+      <h2>Combination (all)</h2>
+      <pre><code data-trim contenteditable>
+return Q.all([
+    eventualAdd(2, 2),
+    eventualAdd(10, 20)
+])
+.then(function(resultArray);
+      </code></pre>
+      <code>then</code> gets an array of results.
+    </section>
+
+    <section>
+      <h2>Combination (spread)</h2>
+      <pre><code data-trim contenteditable>
+Q.all([getFromDisk(), getFromCloud()])
+.spread(function (diskVal, cloudVal) {
+    assert(diskVal === cloudVal);
+})
+.done();
+      </code></pre>
+    </section>
+
+    <section>
+      <h2>Sequences</h2>
+      <pre><code data-trim contenteditable>
+foo(initialVal).then(bar).then(baz).then(qux);
+
+var funcs = [foo, bar, baz, qux];
+
+//With a loop
+var result = Q(initialVal);
+funcs.forEach(function (f) {
+    result = result.then(f);
+});
+return result;
+      </code></pre>
+    </section>
+
+    <section>
+      <h2>Sequences</h2>
+      <pre><code data-trim contenteditable>
+var funcs = [foo, bar, baz, qux];
+
+//With reduce
+return funcs.reduce(function (soFar, f) {
+    return soFar.then(f);
+}, Q(initialVal));
+
+// Or compact
+return funcs.reduce(Q.when, Q());
+      </code></pre>
+    </section>
+
+    <section>
+      <h2>Q.when</h2>
+      <pre><code data-trim contenteditable>
+// when is the static equivalent of then
+return Q.when(valueOrPromise, function (value) {
+}, function (error) {
+});
+      </code></pre>
+    </section>
+
+    <section>
+      <h1>End (Promises)</h1>
+      <h3>with Q</h3>
+      <p>
+      Anders Janmyr<br/>
+      http://anders.janmyr.com<br/>
+      @andersjanmyr<br/>
+      </p>
     </section>
 
   </div>
