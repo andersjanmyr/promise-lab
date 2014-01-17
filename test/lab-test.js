@@ -1,7 +1,8 @@
 'use strict';
 
-var lab = require('../lib/lab');
+var Q = require('q');
 var expect = require('chai').expect;
+var lab = require('../lib/lab');
 
 describe('lab', function() {
     describe('asyncHello', function() {
@@ -53,6 +54,22 @@ describe('lab', function() {
         it('calls then with hello after a while', function(done) {
             lab.nbindHello('Aardvark').then(function(hello) {
                 expect(hello).to.equal('Hello Aardvark');
+                done();
+            });
+        });
+    });
+    describe('parallel', function() {
+        it('calls function in parallel', function(done) {
+            var p1 = Q.nbind(lab.asyncHello, null, 'Tapir');
+            var p2 = Q.nbind(lab.asyncHello, null, 'Sloth');
+            var p3 = Q.nbind(lab.asyncHello, null, 'Anteater');
+            var p4 = Q.nbind(lab.asyncFail, null, 'Anteater');
+            lab.parallel([p1, p2, p3, p4]).then(function(results) {
+                console.log(results);
+                done();
+            })
+            .catch(function(error) {
+                console.log(error);
                 done();
             });
         });
