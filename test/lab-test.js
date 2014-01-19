@@ -58,18 +58,41 @@ describe('lab', function() {
             });
         });
     });
+
     describe('parallel', function() {
+        var p1 = Q.nfcall(lab.asyncHello, 'Tapir');
+        var p2 = Q.nfcall(lab.asyncHello, 'Sloth');
+        var p3 = Q.nfcall(lab.asyncHello, 'Anteater');
+        var p4 = Q.nfcall(lab.asyncFail, 'Anteater');
+
         it('calls function in parallel', function(done) {
-            var p1 = Q.nbind(lab.asyncHello, null, 'Tapir');
-            var p2 = Q.nbind(lab.asyncHello, null, 'Sloth');
-            var p3 = Q.nbind(lab.asyncHello, null, 'Anteater');
-            var p4 = Q.nbind(lab.asyncFail, null, 'Anteater');
-            lab.parallel([p1, p2, p3, p4]).then(function(results) {
-                console.log(results);
+            lab.parallel([p1, p2, p3]).then(function(results) {
+                expect(results.length).to.equal(3);
+                done()
+            });
+        });
+        it('calls function in parallel and fails', function(done) {
+            lab.parallel([p1, p2, p3, p4]).catch(function(error) {
+                expect(error).to.be.defined;
                 done();
-            })
-            .catch(function(error) {
-                console.log(error);
+            });
+        });
+    });
+    describe('series', function() {
+        var p1 = Q.nfcall(lab.asyncHello, 'Tapir');
+        var p2 = Q.nfcall(lab.asyncHello, 'Sloth');
+        var p3 = Q.nfcall(lab.asyncHello, 'Anteater');
+        var p4 = Q.nfcall(lab.asyncFail, 'Anteater');
+
+        it('calls function in series', function(done) {
+            lab.series([p1, p2, p3]).then(function(results) {
+                expect(results.length).to.equal(3);
+                done()
+            });
+        });
+        it('calls function in series and fails', function(done) {
+            lab.series([p1, p2, p3, p4]).catch(function(error) {
+                expect(error).to.be.defined;
                 done();
             });
         });
