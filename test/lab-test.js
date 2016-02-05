@@ -1,6 +1,6 @@
 'use strict';
 
-var Q = require('q');
+var Promise = require('bluebird');
 var expect = require('chai').expect;
 var lab = require('../lib/lab');
 
@@ -41,18 +41,18 @@ describe('lab', function() {
         });
     });
 
-    describe('nfcallHello', function() {
+    describe('promisifyHello', function() {
         it('calls then with hello after a while', function(done) {
-            lab.nfcallHello('Aardvark').then(function(hello) {
+            lab.promisifyHello('Aardvark').then(function(hello) {
                 expect(hello).to.equal('Hello Aardvark');
                 done();
             });
         });
     });
 
-    describe('nbindHello', function() {
+    describe('promisifyHello', function() {
         it('calls then with hello after a while', function(done) {
-            lab.nbindHello('Aardvark').then(function(hello) {
+            lab.promisifyHello('Aardvark').then(function(hello) {
                 expect(hello).to.equal('Hello Aardvark');
                 done();
             });
@@ -60,10 +60,10 @@ describe('lab', function() {
     });
 
     describe('parallel', function() {
-        var p1 = Q.nfcall(lab.asyncHello, 'Tapir');
-        var p2 = Q.nfcall(lab.asyncHello, 'Sloth');
-        var p3 = Q.nfcall(lab.asyncHello, 'Anteater');
-        var p4 = Q.nfcall(lab.asyncFail, 'Anteater');
+        var p1 = Promise.promisify(lab.asyncHello, 'Tapir');
+        var p2 = Promise.promisify(lab.asyncHello, 'Sloth');
+        var p3 = Promise.promisify(lab.asyncHello, 'Anteater');
+        var p4 = Promise.promisify(lab.asyncFail, 'Anteater');
 
         it('calls function in parallel', function(done) {
             lab.parallel([p1, p2, p3]).then(function(results) {
@@ -79,10 +79,10 @@ describe('lab', function() {
         });
     });
     describe('series', function() {
-        var p1 = Q.nfcall(lab.asyncHello, 'Tapir');
-        var p2 = Q.nfcall(lab.asyncHello, 'Sloth');
-        var p3 = Q.nfcall(lab.asyncHello, 'Anteater');
-        var p4 = Q.nfcall(lab.asyncFail, 'Anteater');
+        var p1 = Promise.promisify(lab.asyncHello, 'Tapir');
+        var p2 = Promise.promisify(lab.asyncHello, 'Sloth');
+        var p3 = Promise.promisify(lab.asyncHello, 'Anteater');
+        var p4 = Promise.promisify(lab.asyncFail, 'Anteater');
 
         it('calls function in series', function(done) {
             lab.series([p1, p2, p3]).then(function(results) {

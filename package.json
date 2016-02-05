@@ -1,6 +1,6 @@
 {
     "name": "promise-lab",
-    "version": "0.0.0",
+    "version": "1.0.0",
     "description": "A lab for promises.",
     "main": "index.js",
     "scripts": {
@@ -14,7 +14,7 @@
     "keywords": [
         "Promise",
         "Lab",
-        "Q"
+        "Bluebird"
     ],
     "author": "Anders Janmyr <anders@janmyr.com> (http://anders.janmyr.com/)",
     "license": "ISC",
@@ -44,7 +44,6 @@
         "browser": true,
         "jquery": true,
         "globals": {
-            "moment": true,
             "before": true,
             "describe": true,
             "expect": true,
@@ -52,11 +51,11 @@
         }
     },
     "devDependencies": {
-        "chai": "~1.8.1",
-        "mocha": "~1.16.2",
-        "sinon": "~1.7.3"
+        "chai": "^3.5.0",
+        "mocha": "^.2.4.5",
+        "sinon": "^1.17.3"
     },
     "dependencies": {
-        "q": "~0.9.7"
+        "bluebird": "^3.2.1"
     }
 }
